@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
-use tracing::trace;
+use tracing::{error, trace};
 mod build;
+mod check;
 mod log;
 mod new;
 
@@ -38,5 +39,11 @@ impl StartUp {
 pub fn init() {
     let cli = StartUp::parse();
     log::log(cli.debug == 1);
-    cli.start_up();
+    match check::check() {
+        Ok(_) => cli.start_up(),
+        Err(e) => {
+            error!("{}", e);
+            std::process::exit(1);
+        }
+    }
 }
