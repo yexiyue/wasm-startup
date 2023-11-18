@@ -761,6 +761,7 @@ dependencies = [
  "handlebars",
  "indicatif",
  "predicates",
+ "serde",
  "serde_json",
  "tracing",
  "tracing-subscriber",

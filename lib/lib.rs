@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 use tracing::{error, trace};
 mod build;
-mod check;
+mod utils;
 mod log;
 mod new;
 
@@ -39,7 +39,7 @@ impl StartUp {
 pub fn init() {
     let cli = StartUp::parse();
     log::log(cli.debug == 1);
-    match check::check() {
+    match utils::check() {
         Ok(_) => cli.start_up(),
         Err(e) => {
             error!("{}", e);
