@@ -1,7 +1,6 @@
 use std::process::Command;
 
 use crate::Commands;
-use tracing::trace;
 
 impl Commands {
     pub fn build() {
@@ -10,6 +9,8 @@ impl Commands {
             .arg("-t")
             .arg("web")
             .spawn()
-            .expect("failed to run wasm-pack");
+            .expect("failed to run wasm-pack")
+            .wait()
+            .expect("failed to wait for wasm-pack");
     }
 }

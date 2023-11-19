@@ -1,9 +1,9 @@
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 use tracing::{error, trace};
 mod build;
-mod utils;
 mod log;
 mod new;
+mod utils;
 
 /// 快速启动wasm
 #[derive(Debug, Parser)]
@@ -20,9 +20,18 @@ struct StartUp {
 #[derive(Debug, Subcommand)]
 pub(crate) enum Commands {
     /// 新建项目
-    New,
+    New(NewArgs),
     /// 打包项目
     Build,
+}
+#[derive(Debug, Args)]
+struct NewArgs {
+    #[arg(short, long,action=clap::ArgAction::Count)]
+    /// 使用vite typescript 搭建实时测试环境
+    vite: u8,
+    /// vite项目名称
+    #[arg(short, long)]
+    name: Option<String>,
 }
 
 impl StartUp {
@@ -30,7 +39,7 @@ impl StartUp {
         trace!("{:?}", self);
 
         match &self.commands {
-            Commands::New => Commands::new(),
+            Commands::New(NewArgs { vite, name }) => Commands::new(*vite, name),
             Commands::Build => Commands::build(),
         }
     }
