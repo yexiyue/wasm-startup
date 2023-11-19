@@ -33,8 +33,11 @@
     },
     {
       "title": "FFI",
-      "default": ["js-sys"],
+      "default": ["wasm-bindgen", "js-sys"],
       "list": [
+        {
+          "name": "wasm-bindgen"
+        },
         {
           "name": "wasm-bindgen-futures"
         },
