@@ -1,0 +1,68 @@
+{
+  "dependencies": [
+    {
+      "title": "日志",
+      "default": ["console_error_panic_hook"],
+      "list": [
+        {
+          "name": "tracing"
+        },
+        {
+          "name": "tracing-wasm"
+        },
+        {
+          "name": "console_error_panic_hook"
+        }
+      ]
+    },
+    {
+      "title": "数据序列化",
+      "default": ["serde", "serde-wasm-bindgen"],
+      "list": [
+        {
+          "name": "serde",
+          "features": ["derive"]
+        },
+        {
+          "name": "serde_json"
+        },
+        {
+          "name": "serde-wasm-bindgen"
+        }
+      ]
+    },
+    {
+      "title": "FFI",
+      "default": ["wasm-bindgen", "js-sys"],
+      "list": [
+        {
+          "name": "wasm-bindgen"
+        },
+        {
+          "name": "wasm-bindgen-futures"
+        },
+        {
+          "name": "js-sys"
+        },
+        {
+          "name": "web-sys"
+        }
+      ]
+    },
+    {
+      "title": "其他",
+      "default": [],
+      "list": [
+        {
+          "name": "wgpu"
+        },
+        {
+          "name": "rayon"
+        },
+        {
+          "name": "wasm-bindgen-rayon"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{{#if tracing}}
+use tracing::info;
+{{/if}}
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen(start)]
+fn init_log(){
+    {{#if console_error_panic_hook}}
+    console_error_panic_hook::set_once();
+    {{/if}}
+    {{#if tracing_wasm}}
+    tracing_wasm::set_as_global_default();
+    {{/if}}
+    {{#if tracing}}
+    info!("Initializing log");
+    {{/if}}
+}
+
+#[wasm_bindgen]
+pub fn add(a: i32, b: i32) -> i32 {
+    {{#if tracing}}
+    info!("Adding {} and {}", a, b);
+    {{/if}}
+    a + b
+}
