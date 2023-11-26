@@ -1,5 +1,6 @@
 use crate::utils::{self, read_json_config, read_json_config::DependenciesItem};
 use crate::Commands;
+use clap::arg;
 use console::{style, Emoji};
 use handlebars::Handlebars;
 use serde_json::{json, Value};
@@ -29,20 +30,30 @@ impl Commands {
         spinner.start();
         let project_dir = create_project(project_name.as_str());
         append_create_type(&project_dir);
+        let mut dependencies_args = vec![];
+        let mut features_args = vec![];
         for item in selected_dependencies.iter() {
-            let mut build = Command::new("cargo");
-            build
-                .current_dir(&project_dir)
-                .arg("add")
-                .arg(item.name.as_str());
+            dependencies_args.push(item.name.as_str());
+
             match &item.features {
                 Some(features) => {
-                    build.arg("--features").arg(features.join(","));
+                    for i in features {
+                        features_args.push(format!("{}/{}", item.name, i));
+                    }
                 }
                 None => {}
             }
-            build.output().expect("failed to execute process");
         }
+
+        Command::new("cargo")
+            .arg("add")
+            .args(&dependencies_args)
+            .arg("--features")
+            .arg(features_args.join(","))
+            .current_dir(&project_dir)
+            .output()
+            .expect("failed to execute process");
+
         let main_rs = render_template(&selected_dependencies);
         // 写入文件
         fs::write(project_dir.join("src/lib.rs"), main_rs).unwrap();

@@ -1,5 +1,4 @@
 use dialogue_macro::Dialogue;
-use dialoguer::{theme::ColorfulTheme, Confirm};
 // use wasm_startup::init;
 
 #[derive(Dialogue)]
@@ -21,17 +20,9 @@ struct User {
 }
 
 fn main() {
-    User::admin();
-    User::address();
-    User::names("请选择组长");
-    User::names2("请选择组长2");
-    User::password();
-    // let res: Vec<String> = dialoguer::Input::with_theme(&ColorfulTheme::default())
-    //     // .default(24)
-    //     .with_prompt("请输入地址")
-    //     .interact()
-    //     .unwrap();
+    // User::admin();
+    // User::address();
+    // User::names("请选择组长");
+    // User::names2("请选择组长2");
+    // User::password();
 }
-// fn main() {
-//     init();
-// }
