@@ -31,5 +31,3 @@ predicates = "3.0.4"
 [lib]
 path = "./lib/lib.rs"
 
-[workspace]
-members = ["dialogue-macro"]
