@@ -4,6 +4,7 @@ use crate::utils::{
 };
 use crate::Commands;
 use console::{style, Emoji};
+use dialogue_macro::dialoguer;
 use dialogue_macro::{dialogue_define, Dialogue};
 use handlebars::Handlebars;
 use serde_json::json;
@@ -57,10 +58,7 @@ impl Commands {
             .arg("add")
             .args(dependencies_args)
             .arg("--features")
-            .arg(format!(
-                " {}",
-                features_args.join(","),
-            ))
+            .arg(format!(" {}", features_args.join(","),))
             .current_dir(&project_dir)
             .output()
             .expect("failed to execute process");
