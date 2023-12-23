@@ -1,3 +1,4 @@
+#![allow(unused)]
 use clap::{Args, Parser, Subcommand};
 use tracing::{error, trace};
 mod build;
@@ -34,14 +35,19 @@ struct NewArgs {
     name: Option<String>,
 }
 
-impl StartUp {
-    fn start_up(&self) {
-        trace!("{:?}", self);
-
-        match &self.commands {
+impl Commands {
+    fn run(&self) {
+        match &self {
             Commands::New(NewArgs { vite, name }) => Commands::new(*vite, name),
             Commands::Build => Commands::build(),
         }
+    }
+}
+
+impl StartUp {
+    fn start_up(&self) {
+        trace!("{:?}", self);
+        self.commands.run();
     }
 }
 
