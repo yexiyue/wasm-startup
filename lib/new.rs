@@ -1,31 +1,46 @@
-use crate::utils::{self, read_json_config, read_json_config::DependenciesItem};
+use crate::utils::{
+    self,
+    dependencies::{Dependence, DEFAULT_DEPENDENCE, DEPENDENCE},
+};
 use crate::Commands;
-use clap::arg;
 use console::{style, Emoji};
+use dialogue_macro::{dialogue_define, Dialogue};
 use handlebars::Handlebars;
-use serde_json::{json, Value};
+use serde_json::json;
 use std::{
     fs::{self, OpenOptions},
     io::Write,
     path::PathBuf,
     process::Command,
 };
-use tracing::trace;
+use tracing::{debug, trace};
+
+dialogue_define!({
+    project_name=>{
+        prompt:"请输入项目名称",
+        default:"wasm-project"
+    },
+    dependencies<Dependence>=>{
+        ty:"multiselect",
+        options:DEPENDENCE,
+        prompt:"请选择需要安装的依赖",
+        default:DEFAULT_DEPENDENCE
+    },
+});
 
 impl Commands {
     pub fn new(vite: u8, name: &Option<String>) {
-        // 读取配置文件
-        let config = read_json_config();
         // 获取用户输入的项目名
-        let project_name = utils::dialogue::input("请输入项目名称");
+        let mut d = Dialogue::new();
+        d.project_name();
+        d.dependencies();
+        let project_name = d.project_name.expect("project_name is None");
         trace!("{:?}", project_name);
+
         // 获取用户想要的安装依赖
-        let mut selected_dependencies = vec![];
-        for item in &config.dependencies {
-            let res = item.multi_select();
-            selected_dependencies.extend_from_slice(res.as_slice());
-        }
+        let selected_dependencies = d.dependencies.expect("dependencies is None");
         trace!("{:?}", selected_dependencies);
+
         let spinner = utils::Spinner::new(format!("创建项目中{}...", Emoji("🚚 ", "")));
         spinner.start();
         let project_dir = create_project(project_name.as_str());
@@ -33,23 +48,19 @@ impl Commands {
         let mut dependencies_args = vec![];
         let mut features_args = vec![];
         for item in selected_dependencies.iter() {
-            dependencies_args.push(item.name.as_str());
-
-            match &item.features {
-                Some(features) => {
-                    for i in features {
-                        features_args.push(format!("{}/{}", item.name, i));
-                    }
-                }
-                None => {}
-            }
+            dependencies_args.push(item.name);
+            features_args.push(item.features);
         }
-
+        debug!("{:?}", dependencies_args);
+        debug!("{:?}", features_args);
         Command::new("cargo")
             .arg("add")
-            .args(&dependencies_args)
+            .args(dependencies_args)
             .arg("--features")
-            .arg(features_args.join(","))
+            .arg(format!(
+                " {}",
+                features_args.join(","),
+            ))
             .current_dir(&project_dir)
             .output()
             .expect("failed to execute process");
@@ -98,12 +109,12 @@ crate-type = ["cdylib", "rlib"]
 }
 
 // 根据依赖渲染模版
-fn render_template(dev_list: &Vec<&DependenciesItem>) -> String {
+fn render_template(dev_list: &Vec<Dependence>) -> String {
     let handlebars = Handlebars::new();
 
     let mut dev_json = json!({});
-    for &item in dev_list {
-        dev_json[item.name.as_str()] = serde_json::Value::Bool(true);
+    for item in dev_list {
+        dev_json[item.name] = serde_json::Value::Bool(true);
     }
     handlebars
         .render_template(include_str!("../templates/basic.hbs"), &dev_json)
